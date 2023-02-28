@@ -8,7 +8,20 @@ import './comicsList.scss';
 import spinner from '../spinner/spinner.gif'
 import ErrorMessage from '../errorMessage/ErrorMessage.js'
 
-
+const setContent = (process,Component,newComicsLoading) =>{
+    switch(process){
+        case 'waiting':
+            return <img src={spinner} alt= "" style = {{marginLeft:200,marginTop:100}}/>
+        case 'loading':
+            return newComicsLoading ? <Component/> : <img src={spinner} alt= "" style = {{marginLeft:200,marginTop:100}}/>
+        case 'confirmed':
+            return <Component/>
+        case 'error':
+            return <ErrorMessage/>
+        default:
+            throw new Error('Unexpected procee state')
+    }
+}
 
 
 const ComicsList = (props) => {
@@ -17,7 +30,7 @@ const ComicsList = (props) => {
     const [offset,setOffset] = useState(0)
     const [newComicsLoading,setNewComicsLoading] = useState(false)
 
-    const {loading,error,getAllComics} = useMarvelService()
+    const {loading,error,getAllComics,process,setProcess} = useMarvelService()
 
     useEffect(()=>{
         onRequest(offset,true)
@@ -28,6 +41,7 @@ const ComicsList = (props) => {
         
         getAllComics(offset)
             .then(onComicsLoaded)
+            .then(()=>setProcess('confirmed'))
             
     }
 
@@ -73,16 +87,17 @@ const ComicsList = (props) => {
             </ul>
         )
     }
-    const items = renderComics(comicsList)
+    // const items = renderComics(comicsList)
 
-    const errorMessage = error ? <ErrorMessage/> : null
-    const spinnerMessage = loading && !newComicsLoading ? <img src={spinner} alt= "" style = {{marginLeft:200,marginTop:100}}/> : null
+    // const errorMessage = error ? <ErrorMessage/> : null
+    // const spinnerMessage = loading && !newComicsLoading ? <img src={spinner} alt= "" style = {{marginLeft:200,marginTop:100}}/> : null
 
     return (
         <div className="comics__list">
-            {errorMessage}
+            {/* {errorMessage}
             {spinnerMessage}
-            {items}
+            {items} */}
+            {setContent(process,()=>renderComics(comicsList),newComicsLoading)}
             
             <button 
                 className="button button__main button__long"

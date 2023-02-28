@@ -1,12 +1,28 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import {CSSTransition, TransitionGroup} from 'react-transition-group';
 
 import spinner from '../spinner/spinner.gif'
 import ErrorMessage from '../errorMessage/ErrorMessage.js'
 import useMarvelService from '../../services/MarvelService';
+
+
 import './charList.scss';
 
+const setContent = (process,Component,newItemLoading) =>{
+    switch(process){
+        case 'waiting':
+            return <img src={spinner} alt= "" style = {{marginLeft:200,marginTop:100}}/>
+        case 'loading':
+            return newItemLoading ? <Component/> : <img src={spinner} alt= "" style = {{marginLeft:200,marginTop:100}}/>
+        case 'confirmed':
+            return <Component/>
+        case 'error':
+            return <ErrorMessage/>
+        default:
+            throw new Error('Unexpected procee state')
+    }
+}
 
 
 const CharList = (props) => {
@@ -17,7 +33,7 @@ const CharList = (props) => {
     const [charEnded,setCharEnded] = useState(false)
 
 
-    const {error,loading,getAllCaracters} = useMarvelService()
+    const {error,loading,getAllCaracters,process,setProcess} = useMarvelService()
 
     useEffect(()=>{
         onRequest(offset,true) //пустой массив = вызывается один раз
@@ -28,6 +44,7 @@ const CharList = (props) => {
         initial ? setNewItemLoading(false) : setNewItemLoading(true)
         getAllCaracters(offset)
             .then(onCharListLoaded)
+            .then(()=>setProcess('confirmed'))
     }
 
     
@@ -106,15 +123,16 @@ const CharList = (props) => {
                
     }
 
-    const items = renderItems(charList)
+    // const items = renderItems(charList)
 
-    const errorMessage = error ? <ErrorMessage/> : null
-    const spinnerMessage = loading && !newItemLoading ? <img src={spinner} alt= "" style = {{marginLeft:200,marginTop:100}}/> : null
-
+    // const errorMessage = error ? <ErrorMessage/> : null
+    // const spinnerMessage = loading && !newItemLoading ? <img src={spinner} alt= "" style = {{marginLeft:200,marginTop:100}}/> : null
 
     //анимация выпадающего списка
 
-
+    const charContent = useMemo(()=>{
+       return setContent(process,()=>renderItems(charList),newItemLoading)
+    },[])
 
 
     return (
@@ -122,9 +140,10 @@ const CharList = (props) => {
     
             
                 <div className="char__list">
-                    {errorMessage}
+                    {/* {errorMessage}
                     {spinnerMessage}
-                    {items}
+                    {items} */}
+                    {charContent}
                     <button className="button button__main button__long"
                             disabled = {newItemLoading}
                             onClick = {()=> onRequest(offset)}

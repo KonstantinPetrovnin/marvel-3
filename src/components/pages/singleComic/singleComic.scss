@@ -1,4 +1,5 @@
-@import '../../style/variables.scss';
+@import '../../../style/variables.scss';
+
 
 .single-comic {
     margin-top: 50px;
@@ -36,6 +37,10 @@
             color: $main-color;
         }
         margin-top: 10px;
+    }
+    &__img{
+        width: 272px;
+        height: 321px;
     }
     
 }

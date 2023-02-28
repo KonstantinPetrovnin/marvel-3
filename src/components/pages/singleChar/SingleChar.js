@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
-import useMarvelService from '../../services/MarvelService';
+import useMarvelService from '../../../services/MarvelService';
 import { useParams } from "react-router-dom";
-import ErrorMessage from '../errorMessage/ErrorMessage';
-import spinner from '../spinner/spinner.gif'
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
+
+import ErrorMessage from '../../errorMessage/ErrorMessage';
+import spinner from '../../spinner/spinner.gif'
+
 
 import './singleChar.scss';
 
